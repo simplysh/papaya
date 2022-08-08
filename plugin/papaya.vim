@@ -51,13 +51,16 @@ function! s:make()
   call filter(lines, {index, value -> s:is_error_message(value)})
 
   if !len(lines)
+    call setqflist([], 'r')
+    let s:errors = []
     return
   endif
 
   call map(lines, {index, value -> s:to_quick_fix(value)})
 
   let s:errors = lines
-  call setqflist(lines, 'r')
+  call setqflist([], 'r', { 'title': 'compiler errors' })
+  call setqflist(lines, 'a')
   execute "cfirst"
 
   if s:virtual_is_supported
@@ -66,7 +69,7 @@ function! s:make()
 endfunction
 
 if s:virtual_is_supported
-  autocmd BufEnter * :call s:decorate_current_buffer()
+  autocmd BufRead * :call s:decorate_current_buffer()
   autocmd BufLeave * :unlet! b:papaya_decorated
 endif
 
