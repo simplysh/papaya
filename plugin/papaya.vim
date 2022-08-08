@@ -17,9 +17,11 @@ function! s:to_quick_fix(text)
 endfunction
 
 function! s:make()
+  echo 'Running...'
   let result = system(&makeprg)
-  let lines = split(result, '[\x0]')
+  execute "normal! :\<backspace>\<esc>"
 
+  let lines = split(result, '[\x0]')
   call filter(lines, {index, value -> s:is_error_message(value)})
 
   if !len(lines)
