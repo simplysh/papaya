@@ -36,6 +36,10 @@ function! s:decorate_current_buffer()
   let b:papaya_decorated = 1
 endfunction
 
+function! s:clear_decorations()
+  call prop_remove({ 'type': 'papaya_hint' })
+endfunction
+
 function! s:to_quick_fix(text)
   let [all, source, line, col, message; other] = matchlist(a:text, g:papaya_error_pattern)
   return { 'filename': source, 'lnum': line, 'col': col, 'text': message }
@@ -44,6 +48,12 @@ endfunction
 function! s:make()
   echo 'Running...'
 
+  call setqflist([], 'r')
+  let s:errors = []
+  if s:virtual_is_supported
+    call s:clear_decorations()
+  endif
+
   let result = system(&makeprg)
   execute "normal! :\<backspace>\<esc>"
 
@@ -51,8 +61,6 @@ function! s:make()
   call filter(lines, {index, value -> s:is_error_message(value)})
 
   if !len(lines)
-    call setqflist([], 'r')
-    let s:errors = []
     return
   endif
 
@@ -74,4 +82,5 @@ if s:virtual_is_supported
 endif
 
 command! -nargs=0 -bar PapayaMake call s:make()
+command! -nargs=0 -bar PapayaClearAll call s:clear_decorations()
 
