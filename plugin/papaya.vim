@@ -31,7 +31,9 @@ function! s:decorate_current_buffer()
       let padding = map(range(error.col - 1), {-> ' '})
 
       for hint in to_add
-        let padding[hint.col - 1] = '│'
+        if hint.lnum ==# error.lnum
+          let padding[hint.col - 1] = '│'
+        endif
       endfor
 
       call add(to_add, { 'lnum': error.lnum, 'col': error.col, 'text': '└─' . error.text, 'padding': padding })
@@ -79,7 +81,7 @@ function! s:make()
   let s:errors = lines
   call setqflist([], 'r', { 'title': 'compiler errors' })
   call setqflist(lines, 'a')
-  execute "cfirst"
+  execute "silent! cfirst"
 
   if s:virtual_is_supported
     call s:decorate_current_buffer()
