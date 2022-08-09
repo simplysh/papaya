@@ -37,7 +37,7 @@ function! s:decorate_current_buffer()
 endfunction
 
 function! s:clear_decorations()
-  call prop_remove({ 'type': 'papaya_hint' })
+  call prop_remove({ 'type': 'papaya_hint', 'all': 1 })
 endfunction
 
 function! s:to_quick_fix(text)
