@@ -24,13 +24,22 @@ function! s:decorate_current_buffer()
   endif
 
   let current_path = expand("%")
+  let to_add = []
 
   for error in s:errors
     if error.filename ==# current_path
-      let padding = join(map(range(error.col - 1), {-> ' '}), '')
+      let padding = map(range(error.col - 1), {-> ' '})
 
-      call prop_add(error.lnum, 0, { 'type': 'papaya_hint', 'text': padding . '└─' . error.text, 'text_align': 'below' })
+      for hint in to_add
+        let padding[hint.col - 1] = '│'
+      endfor
+
+      call add(to_add, { 'lnum': error.lnum, 'col': error.col, 'text': '└─' . error.text, 'padding': padding })
     endif
+  endfor
+
+  for hint in to_add
+    call prop_add(hint.lnum, 0, { 'type': 'papaya_hint', 'text': join(hint.padding, '') . hint.text, 'text_align': 'below' })
   endfor
 
   let b:papaya_decorated = 1
@@ -83,5 +92,5 @@ if s:virtual_is_supported
 endif
 
 command! -nargs=0 -bar PapayaMake call s:make()
-command! -nargs=0 -bar PapayaClearAll call s:clear_decorations()
+command! -nargs=0 -bar PapayaClear call s:clear_decorations()
 
