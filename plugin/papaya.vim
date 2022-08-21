@@ -23,7 +23,7 @@ function! s:decorate_current_buffer()
     return
   endif
 
-  let current_path = expand("%")
+  let current_path = substitute(expand("%"), "\\", "/", "g")
   let to_add = []
 
   for error in s:errors
