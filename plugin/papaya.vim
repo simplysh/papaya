@@ -9,6 +9,7 @@ endif
 
 let s:virtual_is_supported = v:version >= 900 && has("patch167")
 let s:errors = []
+let s:output = []
 
 if s:virtual_is_supported
   call prop_type_add('papaya_hint', { 'highlight': 'ErrorMsg' })
@@ -57,11 +58,24 @@ function! s:to_quick_fix(text)
   return { 'filename': source, 'lnum': line, 'col': col, 'text': message }
 endfunction
 
+function! s:show_output()
+  silent! noautocmd execute 'pedit Complier Output'
+
+  silent! wincmd P
+  setlocal buftype=nofile
+  setlocal bufhidden=delete
+  setlocal noswapfile
+
+  call append(0, s:output)
+  setlocal readonly
+endfunction
+
 function! s:make()
   echo 'Running...'
 
   call setqflist([], 'r')
   let s:errors = []
+  let s:output = []
   if s:virtual_is_supported
     call s:clear_decorations()
   endif
@@ -70,6 +84,7 @@ function! s:make()
   execute "normal! :\<backspace>\<esc>"
 
   let lines = split(result, '[\x0]')
+  let s:output = deepcopy(lines)
   call filter(lines, {index, value -> s:is_error_message(value)})
 
   if !len(lines)
@@ -79,7 +94,7 @@ function! s:make()
   call map(lines, {index, value -> s:to_quick_fix(value)})
 
   let s:errors = lines
-  call setqflist([], 'r', { 'title': 'compiler errors' })
+  call setqflist([], 'r', { 'title': 'Compiler Errors' })
   call setqflist(lines, 'a')
   execute "silent! cfirst"
 
@@ -95,4 +110,5 @@ endif
 
 command! -nargs=0 -bar PapayaMake call s:make()
 command! -nargs=0 -bar PapayaClear call s:clear_decorations()
+command! -nargs=0 -bar PapayaOutput call s:show_output()
 
