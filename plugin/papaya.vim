@@ -58,7 +58,7 @@ endfunction
 
 function! s:to_quick_fix(text)
   let [all, source, line, col, message; other] = matchlist(a:text, g:papaya_error_pattern)
-  return { 'filename': source, 'lnum': line, 'col': col, 'text': message }
+  return { 'filename': source, 'lnum': str2nr(line, 10), 'col': str2nr(col, 10), 'text': message }
 endfunction
 
 function! s:show_output()
