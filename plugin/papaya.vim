@@ -26,14 +26,17 @@ function! s:decorate_current_buffer()
 
   let current_path = substitute(expand("%"), "\\", "/", "g")
   let to_add = []
+  let errors = deepcopy(s:errors)
 
-  for error in s:errors
+  call sort(errors, {a, b -> a.lnum == b.lnum ? b.col - a.col : a.lnum - b.lnum})
+
+  for error in errors
     if error.filename ==# current_path
       let padding = map(range(error.col - 1), {-> ' '})
 
       for hint in to_add
         if hint.lnum ==# error.lnum
-          let padding[hint.col - 1] = '│'
+          let hint.padding[error.col - 1] = '│'
         endif
       endfor
 
