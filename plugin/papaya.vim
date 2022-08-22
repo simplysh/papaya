@@ -44,6 +44,11 @@ function! s:decorate_current_buffer()
     endif
   endfor
 
+  " prop_add order seems to be different on windows for some reason
+  if has('win32')
+    call reverse(to_add)
+  endif
+
   for hint in to_add
     call prop_add(hint.lnum, 0, { 'type': 'papaya_hint', 'text': join(hint.padding, '') . hint.text, 'text_align': 'below' })
   endfor
