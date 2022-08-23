@@ -7,7 +7,7 @@ if !exists('g:papaya_error_pattern')
   let g:papaya_error_pattern = '\v^(.*):(\d+):(\d+):\serror:\s(.*)$'
 endif
 
-let s:virtual_is_supported = v:version >= 900 && has("patch167")
+let s:virtual_is_supported = v:version >= 900 && has("patch246")
 let s:errors = []
 let s:output = []
 
@@ -43,11 +43,6 @@ function! s:decorate_current_buffer()
       call add(to_add, { 'lnum': error.lnum, 'col': error.col, 'text': '└─' . error.text, 'padding': padding })
     endif
   endfor
-
-  " prop_add order seems to be different on windows for some reason
-  if has('win32')
-    call reverse(to_add)
-  endif
 
   for hint in to_add
     call prop_add(hint.lnum, 0, { 'type': 'papaya_hint', 'text': join(hint.padding, '') . hint.text, 'text_align': 'below' })
