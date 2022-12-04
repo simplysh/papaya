@@ -97,7 +97,7 @@ function! s:make()
     return
   endif
 
-  call map(lines, {index, value -> s:to_quick_fix(value)})
+  call uniq(sort(map(lines, {index, value -> s:to_quick_fix(value)})))
 
   let s:errors = lines
   call setqflist([], 'r', { 'title': 'Compiler Errors' })
