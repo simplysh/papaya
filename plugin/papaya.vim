@@ -34,9 +34,12 @@ function! s:decorate_current_buffer()
     if error.filename ==# current_path
       let padding = map(range(error.col - 1), {-> ' '})
 
+      " add pipes for multiple errors on same line
       for hint in to_add
         if hint.lnum ==# error.lnum
-          let hint.padding[error.col - 1] = '│'
+          if error.col - 1 < len(hint.padding)
+            let hint.padding[error.col - 1] = '│'
+          endif
         endif
       endfor
 
