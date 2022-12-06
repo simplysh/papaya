@@ -19,6 +19,22 @@ function! s:is_error_message(text)
   return a:text =~ g:papaya_error_pattern
 endfunction
 
+function! s:smart_sort(a, b)
+  if (a:a.filename !=# a:b.filename)
+    return a:a.filename < a:b.filename ? -1 : a:a.filename > a:b.filename ? 1 : 0
+  endif
+
+  if (a:a.lnum !=# a:b.lnum)
+    return a:a.lnum - a:b.lnum
+  endif
+
+  if (a:a.col !=# a:b.col)
+    return a:b.col - a:a.col
+  endif
+
+  return 0;
+endfunction
+
 function! s:decorate_current_buffer()
   if exists("b:papaya_decorated")
     return
@@ -27,8 +43,6 @@ function! s:decorate_current_buffer()
   let current_path = substitute(expand("%"), "\\", "/", "g")
   let to_add = []
   let errors = deepcopy(s:errors)
-
-  call sort(errors, {a, b -> a.lnum == b.lnum ? b.col - a.col : a.lnum - b.lnum})
 
   for error in errors
     if error.filename ==# current_path
@@ -97,7 +111,7 @@ function! s:make()
     return
   endif
 
-  call uniq(sort(map(lines, {index, value -> s:to_quick_fix(value)})))
+  call sort(uniq(sort(map(lines, {index, value -> s:to_quick_fix(value)}))), function('s:smart_sort'))
 
   let s:errors = lines
   call setqflist([], 'r', { 'title': 'Compiler Errors' })
