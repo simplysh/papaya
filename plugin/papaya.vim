@@ -32,7 +32,7 @@ function! s:smart_sort(a, b)
     return a:b.col - a:a.col
   endif
 
-  return 0;
+  return 0
 endfunction
 
 function! s:decorate_current_buffer()
@@ -44,25 +44,30 @@ function! s:decorate_current_buffer()
   let to_add = []
   let errors = deepcopy(s:errors)
 
+  " add pipes for multiple errors on same line
   for error in errors
     if error.filename ==# current_path
       let padding = map(range(error.col - 1), {-> ' '})
 
-      " add pipes for multiple errors on same line
+      " go through inner messages and update symbols
       for hint in to_add
         if hint.lnum ==# error.lnum
           if error.col - 1 < len(hint.padding)
             let hint.padding[error.col - 1] = '│'
           endif
+
+          if error.col ==# hint.col
+            let hint.leader = '├─'
+          endif
         endif
       endfor
 
-      call add(to_add, { 'lnum': error.lnum, 'col': error.col, 'text': '└─' . error.text, 'padding': padding })
+      call add(to_add, { 'lnum': error.lnum, 'col': error.col, 'leader': '└─', 'text': error.text, 'padding': padding })
     endif
   endfor
 
   for hint in to_add
-    call prop_add(hint.lnum, 0, { 'type': 'papaya_hint', 'text': join(hint.padding, '') . hint.text, 'text_align': 'below' })
+    call prop_add(hint.lnum, 0, { 'type': 'papaya_hint', 'text': join(hint.padding, '') . hint.leader . hint.text, 'text_align': 'below' })
   endfor
 
   let b:papaya_decorated = 1
