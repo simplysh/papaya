@@ -4,7 +4,7 @@ endif
 let g:loaded_papaya = 1
 
 if !exists('g:papaya_error_pattern')
-  let g:papaya_error_pattern = '\v^(.*):(\d+):(\d+):\serror:\s(.*)$'
+  let g:papaya_error_pattern = '\v^(.*):(\d+):(\d+):\s%(fatal\s)?error:\s(.*)$'
 endif
 
 let s:virtual_is_supported = v:version >= 900 && has("patch246")
@@ -105,7 +105,7 @@ function! s:make()
     call s:clear_decorations()
   endif
 
-  let result = system(&makeprg)
+  silent let result = system(&makeprg)
   execute "normal! :\<backspace>\<esc>"
 
   let lines = split(result, '[\x0]')
