@@ -1,7 +1,7 @@
-if exists("g:loaded_papaya")
+if exists("g:papaya_loaded")
   finish
 endif
-let g:loaded_papaya = 1
+let g:papaya_loaded = 1
 
 if !exists('g:papaya_error_pattern')
   let g:papaya_error_pattern = '\v^(.*):(\d+):(\d+):\s%(fatal\s)?error:\s(.*)$'
@@ -16,7 +16,13 @@ if s:virtual_is_supported
 endif
 
 function! s:is_error_message(text)
-  return a:text =~ g:papaya_error_pattern
+  let matched = a:text =~ g:papaya_error_pattern
+
+  if exists("g:papaya_debug")
+    echom a:text . ' (' . matched . ')'
+  endif
+
+  return matched
 endfunction
 
 function! s:smart_sort(a, b)
