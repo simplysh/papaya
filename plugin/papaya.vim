@@ -46,7 +46,7 @@ function! s:decorate_current_buffer()
     return
   endif
 
-  let current_path = substitute(expand("%"), "\\", "/", "g")
+  let current_path = substitute(expand("%:."), "\\", "/", "g")
   let to_add = []
   let errors = deepcopy(s:errors)
 
