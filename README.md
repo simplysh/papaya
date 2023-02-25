@@ -3,9 +3,11 @@ Alternative Vim compiler support
 
 ![papaya screenshot](papaya.png)
 
-### Motivation
+## Motivation
 
 Papaya is a simple plugin to streamline running the C compiler from within Vim.
+
+I found the native Vim compiler support too cumbersome for my needs so I decided to create a basic script. I also wanted to take advantage of Vim's newly introduced virtual text support.
 
 ## How it works
 Papaya will use the value of your `makeprg` variable to run the compiler.
@@ -21,7 +23,7 @@ Papaya also populates the quick fix list.
 
 ## Commands
 
-To run papaya, use:
+To run Papaya, use:
 ```
 :PapayaMake
 ```
