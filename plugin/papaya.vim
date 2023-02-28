@@ -19,6 +19,10 @@ if s:virtual_is_supported
   call prop_type_add('papaya_hint', { 'highlight': 'ErrorMsg' })
 endif
 
+function! s:normalize_path(text)
+  return substitute(a:text, "\\", "/", "g")
+endfunction
+
 function! s:is_error_message(text)
   let matched = a:text =~ g:papaya_error_pattern
 
@@ -50,13 +54,19 @@ function! s:decorate_current_buffer()
     return
   endif
 
-  let current_path = substitute(expand("%:."), "\\", "/", "g")
+  let current_path = s:normalize_path(expand("%:."))
   let to_add = []
   let errors = deepcopy(s:errors)
 
   " add pipes for multiple errors on same line
   for error in errors
-    if error.filename ==# current_path
+    let path_matched = error.filename ==# current_path
+
+    if exists("g:papaya_debug")
+      echom '"' . error.filename . '" vs "' . current_path . '" (' . path_matched . ')'
+    endif
+
+    if path_matched
       let padding = map(range(error.col - 1), {-> ' '})
 
       " go through inner messages and update symbols
@@ -90,7 +100,7 @@ endfunction
 
 function! s:to_quick_fix(text)
   let [all, source, line, col, message; other] = matchlist(a:text, g:papaya_error_pattern)
-  return { 'filename': source, 'lnum': str2nr(line, 10), 'col': str2nr(col, 10), 'text': message }
+  return { 'filename': s:normalize_path(source), 'lnum': str2nr(line, 10), 'col': str2nr(col, 10), 'text': message }
 endfunction
 
 function! s:show_output()
@@ -132,6 +142,10 @@ function! s:make()
   call setqflist([], 'r', { 'title': 'Compiler Errors' })
   call setqflist(lines, 'a')
   execute "silent! cfirst"
+
+  if exists("g:papaya_debug")
+    echom '----- Got ' . len(s:errors) . ' error(s)'
+  endif
 
   if s:virtual_is_supported
     call s:decorate_current_buffer()
