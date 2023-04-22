@@ -116,7 +116,7 @@ function! s:show_output()
 endfunction
 
 function! s:make()
-  echo 'Running...'
+  echo 'Compiling...'
 
   call setqflist([], 'r')
   let s:errors = []
