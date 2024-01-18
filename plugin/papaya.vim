@@ -3,6 +3,10 @@ if exists("g:papaya_loaded")
 endif
 let g:papaya_loaded = 1
 
+if exists("g:papaya_debug")
+  echom 'Papaya starting...'
+endif
+
 if !exists('g:papaya_error_pattern')
   let g:papaya_error_pattern = '\v^(.*):(\d+):(\d+):\s%(fatal\s)?error:\s(.*)$'
 endif
@@ -11,12 +15,16 @@ if !exists('g:papaya_make')
   let g:papaya_make = &makeprg
 endif
 
-let s:virtual_is_supported = v:version >= 900 && has("patch246")
+let s:virtual_is_supported = v:version >= 901 || (v:version == 900 && has("patch246"))
 let s:errors = []
 let s:output = []
 
 if s:virtual_is_supported
   call prop_type_add('papaya_hint', { 'highlight': 'ErrorMsg' })
+endif
+
+if exists("g:papaya_debug")
+  echom 'Virtual text support: ' . s:virtual_is_supported ? 'yes' : 'no'
 endif
 
 function! s:normalize_path(text)
