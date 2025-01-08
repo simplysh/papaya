@@ -15,6 +15,8 @@ if !exists('g:papaya_make')
   let g:papaya_make = &makeprg
 endif
 
+" COMPILER
+
 let s:virtual_is_supported = v:version >= 901 || (v:version == 900 && has("patch246"))
 let s:errors = []
 let s:output = []
@@ -165,7 +167,23 @@ if s:virtual_is_supported
   autocmd BufLeave * :unlet! b:papaya_decorated
 endif
 
+" TAGS
+
+function! s:show_doc()
+  let l:tags = taglist('^' . expand('<cword>') . '$')
+  let l:message = 'No information'
+
+  if len(l:tags)
+    if l:tags[0].cmd[0] == '/'
+      let l:message = trim(l:tags[0].cmd[2:-3])
+    endif
+  endif
+
+  call popup_atcursor(l:message, #{ pos: 'topleft', padding: [0, 1, 0, 1], moved: 'any' })
+endfunction
+
 command! -nargs=0 -bar PapayaMake call s:make()
 command! -nargs=0 -bar PapayaClear call s:clear_decorations()
 command! -nargs=0 -bar PapayaOutput call s:show_output()
+command! -nargs=0 -bar PapayaDoc call s:show_doc()
 
