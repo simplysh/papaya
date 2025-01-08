@@ -179,7 +179,8 @@ function! s:show_doc()
     endif
   endif
 
-  call popup_atcursor(l:message, #{ pos: 'topleft', padding: [0, 1, 0, 1], moved: 'any' })
+  let l:popid = popup_atcursor(l:message, #{ pos: 'topleft', padding: [0, 1, 0, 1], moved: 'any' })
+  call setbufvar(winbufnr(l:popid), '&filetype', 'c')
 endfunction
 
 command! -nargs=0 -bar PapayaMake call s:make()
