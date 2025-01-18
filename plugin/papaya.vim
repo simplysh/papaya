@@ -187,14 +187,13 @@ function! s:show_preview()
   call popup_clear()
 
   let l:tags = taglist('^' . expand('<cword>') . '$')
-  let l:message = 'No information'
 
   if len(l:tags)
     if l:tags[0].cmd[0] == '/'
       let l:message = trim(l:tags[0].cmd[2:-3])
-      let l:parts = split(l:message, '(')
+      let l:params = split(split(l:message, '(')[1], ')')[0]
 
-      let l:popid = popup_atcursor('(' . l:parts[1], #{ moved: [0, 0, 0], padding: [0, 1, 0, 1] })
+      let l:popid = popup_atcursor(l:params, #{ moved: [0, 0, 0], padding: [0, 1, 0, 1], col: 'cursor+1' })
       call setbufvar(winbufnr(l:popid), '&filetype', 'c')
     endif
   endif
