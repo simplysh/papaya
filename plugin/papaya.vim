@@ -202,8 +202,8 @@ endfunction
 
 " show function parameters in insert mode
 function! BindPreview()
-  inoremap ( <C-O>:PapayaPreview<CR>(
-  inoremap ) <C-O>:call popup_clear()<CR>)
+  inoremap <silent> ( <C-O>:PapayaPreview<CR>(
+  inoremap <silent> ) <C-O>:call popup_clear()<CR>)
 endfunction
 autocmd filetype c,cpp :call BindPreview()
 
