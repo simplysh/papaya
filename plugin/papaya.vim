@@ -183,8 +183,40 @@ function! s:show_doc()
   call setbufvar(winbufnr(l:popid), '&filetype', 'c')
 endfunction
 
+function! s:show_preview()
+  call popup_clear()
+
+  let l:tags = taglist('^' . expand('<cword>') . '$')
+  let l:message = 'No information'
+
+  if len(l:tags)
+    if l:tags[0].cmd[0] == '/'
+      let l:message = trim(l:tags[0].cmd[2:-3])
+      let l:parts = split(l:message, '(')
+
+      let l:popid = popup_atcursor('(' . l:parts[1], #{ moved: [0, 0, 0], padding: [0, 1, 0, 1] })
+      call setbufvar(winbufnr(l:popid), '&filetype', 'c')
+    endif
+  endif
+endfunction
+
+" show function parameters in insert mode
+function! BindPreview()
+  inoremap ( <C-O>:PapayaPreview<CR>(
+  inoremap ) <C-O>:call popup_clear()<CR>)
+endfunction
+autocmd filetype c,cpp :call BindPreview()
+
+" highlight aliases for C intrinsic types
+function! ExtendedCType()
+  syn keyword cTypeExtended u8 u16 u32 u64 i8 i16 i32 i64 f32 f64 usize
+  hi! link cTypeExtended cType
+endfunction
+autocmd filetype c,cpp :call ExtendedCType()
+
 command! -nargs=0 -bar PapayaMake call s:make()
 command! -nargs=0 -bar PapayaClear call s:clear_decorations()
 command! -nargs=0 -bar PapayaOutput call s:show_output()
 command! -nargs=0 -bar PapayaDoc call s:show_doc()
+command! -nargs=0 -bar PapayaPreview call s:show_preview()
 
