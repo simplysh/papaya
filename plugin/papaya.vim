@@ -191,10 +191,20 @@ function! s:show_preview()
   if len(l:tags)
     if l:tags[0].cmd[0] == '/'
       let l:message = trim(l:tags[0].cmd[2:-3])
-      let l:params = split(split(l:message, '(')[1], ')')[0]
+      let l:parts = split(l:message, '(')
 
-      let l:popid = popup_atcursor(l:params, #{ moved: [0, 0, 0], padding: [0, 1, 0, 1], col: 'cursor+1' })
-      call setbufvar(winbufnr(l:popid), '&filetype', 'c')
+      if len(l:parts) > 1
+        let l:params = l:parts[1]
+
+        if l:params == ")"
+          let l:params = 'void'
+        else
+          let l:params = split(l:params, ')')[0]
+        endif
+
+        let l:popid = popup_atcursor(l:params, #{ moved: [0, 0, 0], padding: [0, 1, 0, 1], col: 'cursor+1' })
+        call setbufvar(winbufnr(l:popid), '&filetype', 'c')
+      endif
     endif
   endif
 endfunction
